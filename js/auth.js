@@ -34,6 +34,7 @@ async function handleSession(session) {
 
         if (userEmailDisplay) userEmailDisplay.textContent = authState.profile?.nome || authState.user.email;
         if (btnLogout) btnLogout.classList.remove('hidden'); // MOSTRAR BOTÃO SAIR
+        if (document.getElementById('btn-profile')) document.getElementById('btn-profile').classList.remove('hidden'); // MOSTRAR BOTÃO PERFIL
 
         // Roteamento
         authSection.classList.add('hidden');
@@ -58,6 +59,7 @@ async function handleSession(session) {
         adminSection.classList.add('hidden');
         clientSection.classList.add('hidden');
         if (btnLogout) btnLogout.classList.add('hidden'); // ESCONDER BOTÃO SAIR
+        if (document.getElementById('btn-profile')) document.getElementById('btn-profile').classList.add('hidden'); // ESCONDER BOTÃO PERFIL
     }
 }
 
@@ -178,4 +180,105 @@ if (btnSignup) {
 }
 
 // Inicia
+// Inicia
 document.addEventListener('DOMContentLoaded', initAuth);
+
+// --- NOVAS FUNÇÕES: Esqueci a Senha e Editar Perfil ---
+
+// 1. Esqueci a Senha
+const forgotPasswordLink = document.querySelector('a.text-blue-600.hover\\:underline'); // Seletor genérico para o link "Esqueceu a senha?"
+if (forgotPasswordLink) {
+    forgotPasswordLink.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('email').value;
+
+        if (!email) {
+            alert("Por favor, digite seu email no campo de login para recuperar a senha.");
+            return;
+        }
+
+        const { error } = await window.supabaseClient.auth.resetPasswordForEmail(email, {
+            redirectTo: window.location.href, // Redireciona de volta para cá para definir nova senha
+        });
+
+        if (error) {
+            alert("Erro ao enviar email: " + error.message);
+        } else {
+            alert(`Email de recuperação enviado para ${email}!\n\nVerifique sua caixa de entrada.`);
+        }
+    });
+}
+
+// 2. Lógica do Modal de Perfil (Profile & Senha)
+const profileModal = document.getElementById('profile-modal');
+const btnOpenProfile = document.getElementById('btn-profile'); // Teremos que criar esse botão no HTML
+const btnCloseProfile = document.getElementById('close-profile-modal');
+const profileForm = document.getElementById('profile-form');
+
+// Abrir Modal e Preencher Dados
+window.openProfileModal = () => {
+    if (!authState.profile) return;
+
+    // Preencher campos
+    document.getElementById('edit-name').value = authState.profile.nome || '';
+    document.getElementById('edit-phone').value = authState.profile.telefone || '';
+    document.getElementById('edit-password').value = ''; // Senha sempre vazia
+
+    profileModal.classList.remove('hidden');
+};
+
+// Fechar Modal
+if (btnCloseProfile) {
+    btnCloseProfile.addEventListener('click', () => {
+        profileModal.classList.add('hidden');
+    });
+}
+
+// Salvar Alterações
+if (profileForm) {
+    profileForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const newName = document.getElementById('edit-name').value;
+        const newPhone = document.getElementById('edit-phone').value;
+        const newPassword = document.getElementById('edit-password').value;
+        const user = authState.user;
+
+        // 1. Atualizar Profile (Nome/Telefone)
+        const { error: profileError } = await window.supabaseClient
+            .from('profiles')
+            .update({ nome: newName, telefone: newPhone })
+            .eq('id', user.id);
+
+        if (profileError) {
+            alert("Erro ao atualizar perfil: " + profileError.message);
+            return;
+        }
+
+        // 2. Atualizar Senha (Se fornecida)
+        if (newPassword) {
+            const { error: passError } = await window.supabaseClient.auth.updateUser({ password: newPassword });
+            if (passError) {
+                alert("Perfil atualizado, mas ERRO ao trocar senha: " + passError.message);
+                return;
+            }
+        }
+
+        alert("Perfil atualizado com sucesso!");
+        profileModal.classList.add('hidden');
+
+        // Atualizar UI localmente
+        authState.profile.nome = newName;
+        authState.profile.telefone = newPhone;
+        document.getElementById('user-email').textContent = newName || user.email;
+    });
+}
+
+// Hook para detectar se o usuário está voltando de um Link de Recuperação de Senha
+window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
+    if (event === "PASSWORD_RECOVERY") {
+        alert("Você está em modo de recuperação de senha. Por favor, vá em 'Meu Perfil' e defina sua nova senha agora.");
+        // Opcional: Abrir modal automaticamente
+        setTimeout(() => window.openProfileModal(), 1000);
+    }
+});
