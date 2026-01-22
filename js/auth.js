@@ -276,9 +276,34 @@ if (profileForm) {
 
 // Hook para detectar se o usuário está voltando de um Link de Recuperação de Senha
 window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
-    if (event === "PASSWORD_RECOVERY") {
-        alert("Você está em modo de recuperação de senha. Por favor, vá em 'Meu Perfil' e defina sua nova senha agora.");
-        // Opcional: Abrir modal automaticamente
-        setTimeout(() => window.openProfileModal(), 1000);
+    // Check for explicit RECOVERY event or if URL contains typical recovery params but event didn't fire yet
+    const isRecovery = event === "PASSWORD_RECOVERY" || (window.location.hash && window.location.hash.includes('type=recovery'));
+
+    if (isRecovery) {
+        // Garantir que o modal abra mesmo se a UI ainda não tiver carregado 100%
+        console.log("Modo de Recuperação Detectado");
+
+        // Espera um pouco para garantir que a sessão foi estabelecida e a UI carregou (auth.js roda cedo)
+        setTimeout(() => {
+            if (window.openProfileModal) {
+                window.openProfileModal();
+
+                // UX: Focar no campo de senha e dar feedback visual
+                const passInput = document.getElementById('edit-password');
+                const modalTitle = document.querySelector('#profile-modal h3');
+
+                if (passInput) {
+                    passInput.focus();
+                    passInput.placeholder = "Digite sua NOVA senha aqui";
+                    passInput.parentElement.classList.add('animate-pulse'); // Destaque visual
+                }
+
+                if (modalTitle) {
+                    modalTitle.innerHTML = '<i class="fas fa-key mr-2 text-yellow-500"></i> Redefinir Senha';
+                }
+
+                alert("Por favor, defina sua nova senha agora.");
+            }
+        }, 1500); // 1.5s delay to be safe
     }
 });
