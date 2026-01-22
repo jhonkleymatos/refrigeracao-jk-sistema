@@ -247,7 +247,18 @@ if (profileForm) {
         const newName = document.getElementById('edit-name').value;
         const newPhone = document.getElementById('edit-phone').value;
         const newPassword = document.getElementById('edit-password').value;
-        const user = authState.user;
+
+        // Garantir que temos o usuário, mesmo se authState.user estiver null
+        let user = authState.user;
+        if (!user) {
+            const { data } = await window.supabaseClient.auth.getUser();
+            user = data?.user;
+        }
+
+        if (!user) {
+            alert("Erro: Usuário não identificado. Tente recarregar a página.");
+            return;
+        }
 
         // 1. Atualizar Profile (Nome/Telefone)
         const { error: profileError } = await window.supabaseClient
