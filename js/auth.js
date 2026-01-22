@@ -217,11 +217,16 @@ const profileForm = document.getElementById('profile-form');
 
 // Abrir Modal e Preencher Dados
 window.openProfileModal = () => {
-    if (!authState.profile) return;
+    // Permite abrir mesmo se perfil não carregou (para reset de senha funcionar)
+    const profile = authState.profile || {};
 
     // Preencher campos
-    document.getElementById('edit-name').value = authState.profile.nome || '';
-    document.getElementById('edit-phone').value = authState.profile.telefone || '';
+    const nameInput = document.getElementById('edit-name');
+    const phoneInput = document.getElementById('edit-phone');
+
+    if (nameInput) nameInput.value = profile.nome || '';
+    if (phoneInput) phoneInput.value = profile.telefone || '';
+
     document.getElementById('edit-password').value = ''; // Senha sempre vazia
 
     profileModal.classList.remove('hidden');
