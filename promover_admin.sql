@@ -9,6 +9,6 @@ where email = 'jhonkleymatos@gmail.com';
 insert into public.profiles (id, email, role, nome)
 select id, email, 'admin', 'Técnico Responsável'
 from auth.users
-where email = 'jhonkleymatos@
+where email = 'jhonkleymatos@gmail.com'
 on conflict (id) do update
 set role = 'admin';

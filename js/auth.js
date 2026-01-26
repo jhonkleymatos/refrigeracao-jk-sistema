@@ -83,7 +83,10 @@ async function signup(email, password, nome, telefone, endereco) {
     // 1. Criar Auth User
     const { data: authData, error: authError } = await window.supabaseClient.auth.signUp({
         email: email,
-        password: password
+        password: password,
+        options: {
+            emailRedirectTo: window.location.origin
+        }
     });
 
     if (authError) {
@@ -292,8 +295,28 @@ if (profileForm) {
 
 // Hook para detectar se o usuário está voltando de um Link de Recuperação de Senha
 window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
-    // Check for explicit RECOVERY event or if URL contains typical recovery params but event didn't fire yet
-    const isRecovery = event === "PASSWORD_RECOVERY" || (window.location.hash && window.location.hash.includes('type=recovery'));
+    const hash = window.location.hash;
+
+    // 1. Verificar ERROS na URL (Link expirado, inválido, etc)
+    if (hash && (hash.includes('error_code') || hash.includes('error_description'))) {
+        console.warn("Erro detectado na URL:", hash);
+
+        let msg = "Erro desconhecido ao verificar link.";
+        if (hash.includes('otp_expired')) {
+            msg = "Este link de recuperação expirou ou já foi usado.\n\nPor favor, solicite uma nova redefinição de senha.";
+        } else if (hash.includes('access_denied')) {
+            msg = "Acesso negado ou link inválido.";
+        }
+
+        alert(msg);
+
+        // Limpar URL para não confundir o usuário se ele der refresh
+        history.replaceState(null, null, ' ');
+        return; // Interrompe o fluxo, não abre modal
+    }
+
+    // 2. Check for explicit RECOVERY event or if URL contains typical recovery params but event didn't fire yet
+    const isRecovery = event === "PASSWORD_RECOVERY" || (hash && hash.includes('type=recovery'));
 
     if (isRecovery) {
         // Garantir que o modal abra mesmo se a UI ainda não tiver carregado 100%

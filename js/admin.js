@@ -134,42 +134,88 @@ if (quickUploadForm) {
         const files = document.getElementById('quick-photos').files;
         if (files.length === 0) return;
 
-        // 1. Encontrar ou Criar Serviço de "Portfólio"
-        // Precisamos do ID do admin para criar
-        const user = await window.supabaseClient.auth.getUser();
-        const userId = user.data.user.id;
+        // 1. Garantir que exite um Cliente para vincular o "Aparelho Portfólio"
+        // (Já que a tabela aparelhos exige cliente_id NOT NULL)
 
-        // Primeiro tenta achar um aparelho genérico "Portfólio"
-        let aparelhoId = null;
+        let portfolioClientId = null;
 
-        // Simplificando: Criamos um serviço "Portfólio" novo toda vez ou buscamos um existente?
-        // Vamos criar um serviço novo do tipo "Portfólio" marcado como concluído.
+        // Tenta achar o cliente "Portfólio Geral"
+        const { data: existingClient } = await window.supabaseClient
+            .from('clientes')
+            .select('id')
+            .eq('nome', 'Portfólio Geral')
+            .single();
 
-        // Criar aparelho dummy se precisar (ou usar null se o banco permitisse, mas não permite)
+        if (existingClient) {
+            portfolioClientId = existingClient.id;
+        } else {
+            // Cria o cliente se não existir
+            const { data: newClient, error: clientError } = await window.supabaseClient
+                .from('clientes')
+                .insert([{
+                    nome: 'Portfólio Geral',
+                    whatsapp: '00000000000',
+                    endereco: 'Sistema'
+                }])
+                .select()
+                .single();
+
+            if (clientError) {
+                console.error("Erro ao criar cliente portfólio:", clientError);
+                alert("Erro interno: Não foi possível preparar o sistema para upload (Erro Cliente).");
+                return;
+            }
+            portfolioClientId = newClient.id;
+        }
+
+        // 2. Criar ou Buscar Aparelho "Portfólio" vinculado a esse cliente
+        let apId = null;
+
         const { data: aparelho, error: apError } = await window.supabaseClient
             .from('aparelhos')
-            .insert([{ marca: 'Portfólio', modelo: 'Geral', tipo: 'outro', cliente_id: null }]) // cliente_id null se permitido, senão teremos erro
+            .insert([{
+                marca: 'Portfólio',
+                modelo: 'Fotos Avulsas',
+                tipo: 'outro',
+                cliente_id: portfolioClientId
+            }])
             .select()
             .single();
 
-        // Se der erro de cliente_id not null na tabela aparelhos, teríamos que criar um cliente dummy.
-        // Assumindo que a tabela aparelhos permite cliente_id nulo ou RLS permite.
-        // Se falhar, vamos alertar.
-
         if (apError) {
-            // Fallback: Tenta buscar um aparelho existente qualquer para vincular
-            // Ou criar um cliente fake
-            console.warn("Criando aparelho portfólio falhou, tentando usar existente ou continuar...", apError);
+            console.warn("Aparelho portfólio talvez já exista ou erro:", apError);
+            // Se falhar, tenta pegar o ultimo desse cliente
+            const { data: existingApp } = await window.supabaseClient
+                .from('aparelhos')
+                .select('id')
+                .eq('cliente_id', portfolioClientId)
+                .limit(1)
+                .single();
+
+            if (!existingApp) {
+                alert("Erro CRÍTICO: Não foi possível encontrar um aparelho de Portfólio.");
+                return;
+            }
+            apId = existingApp.id;
+        } else {
+            apId = aparelho.id;
         }
 
-        const apId = aparelho ? aparelho.id : (await getAnyApplianceId());
+        if (!apId) {
+            alert("Erro Desconhecido: ID do aparelho é nulo.");
+            return;
+        }
+
+        // 3. Criar o Serviço
+        const user = await window.supabaseClient.auth.getUser();
+        const userId = user.data.user?.id;
 
         const { data: service, error: servError } = await window.supabaseClient
             .from('servicos')
             .insert([{
                 aparelho_id: apId,
                 tipo: 'Portfólio',
-                cliente_profile_id: userId, // O próprio admin como "dono"
+                cliente_profile_id: userId, // O admin criando
                 status: 'concluido',
                 observacoes: 'Foto adicionada via Upload Rápido'
             }])
@@ -177,7 +223,7 @@ if (quickUploadForm) {
             .single();
 
         if (servError) {
-            alert("Erro ao criar registro de portfólio: " + servError.message);
+            alert("Erro ao criar registro de serviço: " + servError.message);
             return;
         }
 
@@ -185,8 +231,7 @@ if (quickUploadForm) {
 
         quickUploadModal.classList.add('hidden');
         quickUploadForm.reset();
-        alert("Fotos adicionadas ao Portfólio!");
-        // Opcional: Atualizar a galeria se ela estiver visível na página
+        alert("Fotos adicionadas ao Portfólio com sucesso!");
         if (window.loadGallery) window.loadGallery();
     });
 }
