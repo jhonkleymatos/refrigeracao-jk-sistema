@@ -5,7 +5,7 @@ const requestForm = document.getElementById('request-form');
 
 // CONFIGURAÇÃO WHATSAPP DA EMPRESA
 // Coloque o número do Admin aqui (apenas números, com DDD)
-const COMPANY_WHATSAPP = '551100000000'; // <--- EDITE AQUI SEU NÚMERO
+const COMPANY_WHATSAPP = '5595991436017'; // <--- EDITE AQUI SEU NÚMERO
 
 // Carregar Histórico de Serviços do Cliente
 window.loadClientDashboard = async () => {
