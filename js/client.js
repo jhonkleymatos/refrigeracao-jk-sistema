@@ -86,8 +86,14 @@ async function loadServiceOptions() {
         priceList.innerHTML = '';
         services.forEach(svc => {
             const div = document.createElement('div');
-            div.className = 'flex justify-between border-b border-gray-100 pb-1 last:border-0';
-            div.innerHTML = `<span>${svc.name}</span> <span class="font-bold text-blue-600">R$ ${svc.price}</span>`;
+            div.className = 'flex justify-between items-start border-b border-gray-100 pb-2 mb-2 last:border-0 last:mb-0';
+            div.innerHTML = `
+                <div>
+                    <div class="font-medium text-gray-800">${svc.name}</div>
+                    ${svc.description ? `<div class="text-xs text-gray-500 mt-0.5">${svc.description}</div>` : ''}
+                </div>
+                <span class="font-bold text-blue-600 whitespace-nowrap ml-4">R$ ${svc.price}</span>
+            `;
             priceList.appendChild(div);
         });
     }
