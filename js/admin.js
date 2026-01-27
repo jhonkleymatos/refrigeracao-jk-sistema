@@ -395,11 +395,16 @@ if (catalogForm) {
         }
 
         if (error) {
-            alert("Erro ao salvar: " + error.message);
+            if (error.message.includes('duplicate key') || error.message.includes('unique constraint')) {
+                alert("Erro: Já existe um serviço cadastrado com este nome exato.\nPor favor, escolha outro nome ou edite o existente.");
+            } else {
+                alert("Erro ao salvar: " + error.message);
+            }
         } else {
             catalogForm.reset();
             catIdInput.value = '';
             loadCatalogManagement();
+            alert("Salvo com sucesso!");
         }
     });
 }
