@@ -128,9 +128,17 @@ async function logout() {
             console.error("Exceção no logout:", err);
         } finally {
             // Força recarregamento mesmo se der erro na API
-            // Limpa dados locais manualmente se necessário (backup)
-            localStorage.removeItem('sb-' + SUPABASE_KEY + '-auth-token');
-            location.reload();
+            // Tenta limpar o token do LocalStorage manualmente (Backup)
+            // O padrão do Supabase é 'sb-<project_id>-auth-token'
+            try {
+                const projectId = SUPABASE_URL.split('//')[1].split('.')[0];
+                const keyName = `sb-${projectId}-auth-token`;
+                localStorage.removeItem(keyName);
+            } catch (e) {
+                console.error("Erro ao limpar storage:", e);
+            }
+
+            window.location.reload();
         }
     }
 }
