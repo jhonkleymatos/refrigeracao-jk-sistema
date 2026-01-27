@@ -51,76 +51,141 @@ window.loadClientDashboard = async () => {
         `;
         clientHistoryList.appendChild(item);
     });
+});
 };
 
-// Solicitar Serviço + WhatsApp
+// Carregar Opções de Serviço do Catálogo
+async function loadServiceOptions() {
+    const select = document.getElementById('req-service-id');
+    const priceDisplay = document.getElementById('estimated-price');
+    const priceValue = document.getElementById('price-value');
+    const priceList = document.getElementById('client-price-list');
+
+    if (!select) return;
+
+    // 1. Fetch Catalog
+    const { data: services, error } = await window.supabaseClient
+        .from('service_catalog')
+        .select('*')
+        .eq('active', true)
+        .order('name');
+
+    if (error) return;
+
+    // Populate Select
+    select.innerHTML = '<option value="">Selecione um Serviço...</option>';
+    services.forEach(svc => {
+        const option = document.createElement('option');
+        option.value = svc.id;
+        option.textContent = svc.name;
+        option.dataset.price = svc.price;
+        select.appendChild(option);
+    });
+
+    // Populate Side List
+    if (priceList) {
+        priceList.innerHTML = '';
+        services.forEach(svc => {
+            const div = document.createElement('div');
+            div.className = 'flex justify-between border-b border-gray-100 pb-1 last:border-0';
+            div.innerHTML = `<span>${svc.name}</span> <span class="font-bold text-blue-600">R$ ${svc.price}</span>`;
+            priceList.appendChild(div);
+        });
+    }
+
+    // Change Listener for Price Estimate
+    select.addEventListener('change', (e) => {
+        const opt = select.options[select.selectedIndex];
+        if (opt.value) {
+            priceDisplay.classList.remove('hidden');
+            priceValue.textContent = parseFloat(opt.dataset.price).toFixed(2).replace('.', ',');
+        } else {
+            priceDisplay.classList.add('hidden');
+        }
+    });
+}
+
+// Injetar o carregamento do catálogo no loadClientDashboard
+const originalLoadClientDashboard = window.loadClientDashboard;
+window.loadClientDashboard = async () => {
+    await originalLoadClientDashboard(); // Carrega histórico
+    loadServiceOptions(); // Carrega opções
+};
+
+
+// Solicitar Serviço + WhatsApp (Atualizado)
 if (requestForm) {
     requestForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const type = document.getElementById('req-type').value;
+        const select = document.getElementById('req-service-id');
+        const selectedOpt = select.options[select.selectedIndex];
+
+        if (!select.value) {
+            alert("Selecione um serviço.");
+            return;
+        }
+
+        const serviceName = selectedOpt.text;
+        const estPrice = selectedOpt.dataset.price;
+
         const brand = document.getElementById('req-brand').value;
         const model = document.getElementById('req-model').value;
         const notes = document.getElementById('req-notes').value;
 
-        // 1. Cadastrar Aparelho (Simplificado: Cria um novo para cada pedido, ideal seria selecionar existente)
+        // 1. Aparelho
         const user = authState.user;
 
-        // Criar aparelho
+        // (Lógica de aparelho mantida simplificada)
         const { data: aparelho, error: apError } = await window.supabaseClient
             .from('aparelhos')
             .insert([{
-                cliente_id: null, // Campo legacy, se puder remover depois
+                cliente_id: null,
                 marca: brand,
                 modelo: model,
-                tipo: 'split', // Default por enquanto
-                // Para simplificar, não estamos ligando o aparelho ao profile ainda na tabela 'aparelhos', 
-                // mas vamos ligar o serviço ao profile.
+                tipo: 'split'
             }])
             .select()
             .single();
 
         if (apError) {
-            console.error("Erro aparelho:", apError);
-            alert("Erro ao registrar aparelho.");
+            alert("Erro ao registrar aparelho. Tente novamente.");
             return;
         }
 
-        // 2. Criar Serviço Pendente
+        // 2. Serviço
         const { error: servError } = await window.supabaseClient
             .from('servicos')
             .insert([{
                 aparelho_id: aparelho.id,
-                tipo: type,
+                tipo: serviceName, // Salvando o Nome por enquanto para compatibilidade com sistema antigo
                 cliente_profile_id: user.id,
-                observacoes: notes,
+                observacoes: notes + ` (Preço Est: R$ ${estPrice})`,
                 status: 'pendente'
             }]);
 
         if (servError) {
-            console.error("Erro serviço:", servError);
-            alert("Erro ao solicitar serviço.");
+            alert("Erro ao solicitar serviço: " + servError.message);
             return;
         }
 
-        // 3. Montar Link do WhatsApp
-        // Pegar dados do profile para a mensagem
+        // 3. WhatsApp
         const profile = authState.profile;
-        const phone = '5511999999999'; // Substitua pelo SEU número de TÉCNICO
+        const phone = '5511999999999';
 
         const message = `Olá! Sou *${profile.nome}*. 
-Gostaria de solicitar um serviço de *${type}*.
+Gostaria de solicitar: *${serviceName}*.
+Valor Estimado: *R$ ${estPrice}*.
 Aparelho: ${brand} ${model}.
 Obs: ${notes}.
 Endereço: ${profile.endereco || 'Não informado'}.`;
 
         const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 
-        // Abrir WhatsApp
         window.open(whatsappUrl, '_blank');
-
-        alert("Solicitação registrada! Redirecionando para o WhatsApp...");
+        alert("Solicitação registrada! Abrindo WhatsApp...");
         requestForm.reset();
+        document.getElementById('estimated-price').classList.add('hidden');
         window.loadClientDashboard();
     });
 }

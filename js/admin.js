@@ -267,10 +267,137 @@ async function uploadPhotos(files, serviceId) {
                     .insert([{ servico_id: serviceId, url_foto: publicUrl, nome_arquivo: fileName }]);
 
                 uploadCount++;
-            } else {
-                console.error("Erro upload:", uploadError);
+                // --- CATALOG MANAGEMENT ---
+
+                const catalogModal = document.getElementById('catalog-modal');
+                const catalogListBody = document.getElementById('catalog-list-body');
+                const catalogForm = document.getElementById('catalog-form');
+                const btnManageCatalog = document.getElementById('btn-manage-catalog');
+                const btnCloseCatalog = document.getElementById('close-catalog-modal');
+                const btnClearCatalog = document.getElementById('btn-clear-catalog');
+
+                // Elementos do form
+                const catIdInput = document.getElementById('cat-id');
+                const catNameInput = document.getElementById('cat-name');
+                const catPriceInput = document.getElementById('cat-price');
+                const catDescInput = document.getElementById('cat-desc');
+
+                // Open Modal
+                if (btnManageCatalog) {
+                    btnManageCatalog.addEventListener('click', () => {
+                        catalogModal.classList.remove('hidden');
+                        loadCatalogManagement();
+                    });
+                }
+
+                if (btnCloseCatalog) {
+                    btnCloseCatalog.addEventListener('click', () => {
+                        catalogModal.classList.add('hidden');
+                    });
+                }
+
+                if (btnClearCatalog) {
+                    btnClearCatalog.addEventListener('click', () => {
+                        catalogForm.reset();
+                        catIdInput.value = '';
+                    });
+                }
+
+                // Load List
+                async function loadCatalogManagement() {
+                    if (!catalogListBody) return;
+
+                    catalogListBody.innerHTML = '<tr><td colspan="3" class="p-4 text-center">Carregando...</td></tr>';
+
+                    const { data: items, error } = await window.supabaseClient
+                        .from('service_catalog')
+                        .select('*')
+                        .order('name');
+
+                    if (error) {
+                        console.error("Erro catalogo:", error);
+                        catalogListBody.innerHTML = '<tr><td colspan="3" class="p-4 text-center text-red-500">Erro ao carregar (Verifique o script SQL).</td></tr>';
+                        return;
+                    }
+
+                    catalogListBody.innerHTML = '';
+                    items.forEach(item => {
+                        const tr = document.createElement('tr');
+                        tr.className = 'border-b hover:bg-gray-50';
+                        tr.innerHTML = `
+            <td class="p-2">
+                <div class="font-bold text-gray-800">${item.name}</div>
+                <div class="text-xs text-gray-500">${item.description || ''}</div>
+            </td>
+            <td class="p-2 text-green-700 font-bold">R$ ${item.price}</td>
+            <td class="p-2 text-right space-x-2">
+                <button onclick="editCatalogItem('${item.id}', '${item.name}', '${item.price}', '${item.description || ''}')" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
+                <button onclick="deleteCatalogItem('${item.id}')" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+            </td>
+        `;
+                        catalogListBody.appendChild(tr);
+                    });
+                }
+
+                // Global functions for inline onclick
+                window.editCatalogItem = (id, name, price, desc) => {
+                    catIdInput.value = id;
+                    catNameInput.value = name;
+                    catPriceInput.value = price;
+                    catDescInput.value = desc;
+                };
+
+                window.deleteCatalogItem = async (id) => {
+                    if (!confirm("Excluir este serviço do catálogo?")) return;
+
+                    const { error } = await window.supabaseClient
+                        .from('service_catalog')
+                        .delete()
+                        .eq('id', id);
+
+                    if (error) alert("Erro ao excluir: " + error.message);
+                    else loadCatalogManagement();
+                };
+
+                // Save (Add/Edit)
+                if (catalogForm) {
+                    catalogForm.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+
+                        const id = catIdInput.value;
+                        const name = catNameInput.value;
+                        const price = catPriceInput.value;
+                        const desc = catDescInput.value;
+
+                        let error = null;
+
+                        if (id) {
+                            // Update
+                            const { error: err } = await window.supabaseClient
+                                .from('service_catalog')
+                                .update({ name, price, description: desc })
+                                .eq('id', id);
+                            error = err;
+                        } else {
+                            // Insert
+                            const { error: err } = await window.supabaseClient
+                                .from('service_catalog')
+                                .insert([{ name, price, description: desc }]);
+                            error = err;
+                        }
+
+                        if (error) {
+                            alert("Erro ao salvar: " + error.message);
+                        } else {
+                            catalogForm.reset();
+                            catIdInput.value = '';
+                            loadCatalogManagement();
+                        }
+                    });
+                } else {
+                    console.error("Erro upload:", uploadError);
+                }
             }
+            return uploadCount;
         }
-        return uploadCount;
     }
-}
