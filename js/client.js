@@ -3,6 +3,10 @@
 const clientHistoryList = document.getElementById('client-history-list');
 const requestForm = document.getElementById('request-form');
 
+// CONFIGURAÇÃO WHATSAPP DA EMPRESA
+// Coloque o número do Admin aqui (apenas números, com DDD)
+const COMPANY_WHATSAPP = '551100000000'; // <--- EDITE AQUI SEU NÚMERO
+
 // Carregar Histórico de Serviços do Cliente
 window.loadClientDashboard = async () => {
     if (!clientHistoryList) return;
@@ -138,14 +142,45 @@ if (requestForm) {
         const model = document.getElementById('req-model').value;
         const notes = document.getElementById('req-notes').value;
 
-        // 1. Aparelho
+        // 1. Garantir que exite um "Cliente" na tabela clientes (vínculo para o aparelho)
         const user = authState.user;
+        const profile = authState.profile;
 
-        // (Lógica de aparelho mantida simplificada)
+        // Buscamos se já existe um cliente vinculado a este user_id
+        let { data: clientRecord } = await window.supabaseClient
+            .from('clientes')
+            .select('id')
+            .eq('user_id', user.id)
+            .single();
+
+        let clienteId = clientRecord?.id;
+
+        // Se não existir, criamos agora (sincronizando com o Profile)
+        if (!clienteId) {
+            const { data: newClient, error: clientErr } = await window.supabaseClient
+                .from('clientes')
+                .insert([{
+                    nome: profile.nome || 'Cliente App',
+                    whatsapp: profile.telefone || '',
+                    endereco: profile.endereco || '',
+                    user_id: user.id
+                }])
+                .select()
+                .single();
+
+            if (clientErr) {
+                console.error("Erro criacao cliente:", clientErr);
+                alert("Erro interno ao vincular cliente. Tente novamente.");
+                return;
+            }
+            clienteId = newClient.id;
+        }
+
+        // 2. Aparelho (Agora com ID válido de cliente)
         const { data: aparelho, error: apError } = await window.supabaseClient
             .from('aparelhos')
             .insert([{
-                cliente_id: null,
+                cliente_id: clienteId, // ID válido obrigatório
                 marca: brand,
                 modelo: model,
                 tipo: 'split'
@@ -175,8 +210,8 @@ if (requestForm) {
         }
 
         // 3. WhatsApp
-        const profile = authState.profile;
-        const phone = '5511999999999';
+        // const profile = authState.profile; // REMOVIDO: Já declarado acima
+        const phone = COMPANY_WHATSAPP;
 
         const message = `Olá! Sou *${profile.nome}*. 
 Gostaria de solicitar: *${serviceName}*.
