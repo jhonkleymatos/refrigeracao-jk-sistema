@@ -51,7 +51,6 @@ window.loadClientDashboard = async () => {
         `;
         clientHistoryList.appendChild(item);
     });
-});
 };
 
 // Carregar Opções de Serviço do Catálogo
