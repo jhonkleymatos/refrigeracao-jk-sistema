@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
-/* Reset & Base */
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -20,10 +20,8 @@ body {
     display: none !important;
 }
 
-/* Navbar */
 .navbar {
     background-color: #111827;
-    /* gray-900 */
     color: white;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     position: sticky;
@@ -78,7 +76,6 @@ body {
 
 .btn-profile-admin {
     background-color: #374151;
-    /* gray-700 */
     color: white;
     border: none;
     padding: 0.25rem 0.75rem;
@@ -93,7 +90,6 @@ body {
 
 .btn-logout-admin {
     background-color: #dc2626;
-    /* red-600 */
     color: white;
     border: none;
     padding: 0.25rem 0.75rem;
@@ -107,7 +103,7 @@ body {
     background-color: #b91c1c;
 }
 
-/* Main Admin */
+
 .main-container {
     max-width: 1200px;
     margin: 2rem auto;
@@ -152,14 +148,12 @@ body {
 
 .btn-secondary {
     background-color: #1f2937;
-    /* gray-800 */
 }
 
 .btn-secondary:hover {
     background-color: #111827;
 }
 
-/* Service Grid */
 .admin-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -178,7 +172,6 @@ body {
     }
 }
 
-/* Service Cards */
 .service-card {
     border-radius: 0.25rem;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
@@ -189,7 +182,6 @@ body {
 .card-pending {
     background-color: white;
     border-left: 4px solid #facc15;
-    /* yellow-400 */
 }
 
 .card-done {
@@ -219,7 +211,6 @@ body {
     cursor: pointer;
 }
 
-/* Modals */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -246,7 +237,6 @@ body {
 
 .modal-content-lg {
     max-width: 42rem;
-    /* 2xl */
     max-height: 90vh;
     overflow-y: auto;
 }
@@ -269,7 +259,6 @@ body {
     color: #1f2937;
 }
 
-/* Forms in Modal */
 .form-grid {
     display: grid;
     gap: 1rem;
@@ -290,7 +279,6 @@ body {
     padding: 0.5rem;
 }
 
-/* File Upload Area */
 .upload-area {
     background-color: #eff6ff;
     padding: 1rem;
@@ -345,7 +333,6 @@ body {
     cursor: pointer;
 }
 
-/* Catalog Table */
 .catalog-form-container {
     background-color: #f9fafb;
     padding: 1rem;

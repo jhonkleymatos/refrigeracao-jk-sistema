@@ -4,7 +4,6 @@ var ZAP = '5595991436017';
 var usuario_logado = null;
 var perfil_do_usuario = null;
 
-// Auth Check (Duplicated/Simplified for isolation)
 function initAuth() {
     supabaseClient.auth.getSession().then(function (dados) {
         checkSession(dados.data.session);
@@ -27,9 +26,8 @@ function checkSession(sessao) {
             if (document.getElementById('user-email')) {
                 document.getElementById('user-email').textContent = (p && p.nome) ? p.nome : usuario_logado.email;
             }
-            // Protect
             if (p && p.role === 'admin') {
-                window.location.href = '../admin/index.html'; // Admin shouldn't be here? Or maybe allow partial access. Redirecting for strict role.
+                window.location.href = '../admin/index.html';
             }
             loadClientDashboard();
         });
@@ -43,7 +41,6 @@ function logout() {
 }
 
 
-// Carregar Histórico de Serviços do Cliente
 function loadClientDashboard() {
     if (!lista_hist) return;
 
@@ -64,26 +61,27 @@ function loadClientDashboard() {
                     lista_hist.innerHTML = '<p>Nada aqui.</p>';
                 } else {
                     lista_hist.innerHTML = '';
-                    var div = document.createElement('div');
-                    div.className = 'history-item';
+                    servicos.forEach(function (s) {
+                        var div = document.createElement('div');
+                        div.className = 'history-item';
 
-                    var cor = 'st-pendente';
-                    if (s.status == 'concluido') cor = 'st-concluido';
-                    if (s.status == 'cancelado') cor = 'st-cancelado';
+                        var cor = 'st-pendente';
+                        if (s.status == 'concluido') cor = 'st-concluido';
+                        if (s.status == 'cancelado') cor = 'st-cancelado';
 
-                    div.innerHTML = '<div class="history-info"><p class="s-type">' + s.tipo + '</p>' +
-                        '<p class="date">' + new Date(s.created_at).toLocaleDateString() + '</p>' +
-                        (s.aparelhos ? '<p class="dev">' + s.aparelhos.marca + ' - ' + s.aparelhos.modelo + '</p>' : '') +
-                        '</div>' +
-                        '<span class="status-badge ' + cor + '">' + (s.status ? s.status.toUpperCase() : 'PENDENTE') + '</span>';
-                    lista_hist.appendChild(div);
+                        div.innerHTML = '<div class="history-info"><p class="s-type">' + s.tipo + '</p>' +
+                            '<p class="date">' + new Date(s.created_at).toLocaleDateString() + '</p>' +
+                            (s.aparelhos ? '<p class="dev">' + s.aparelhos.marca + ' - ' + s.aparelhos.modelo + '</p>' : '') +
+                            '</div>' +
+                            '<span class="status-badge ' + cor + '">' + (s.status ? s.status.toUpperCase() : 'PENDENTE') + '</span>';
+                        lista_hist.appendChild(div);
+                    });
                 }
             }
             carregarOpcoes();
         });
 };
 
-// Carregar Opções de Serviço do Catálogo
 function carregarOpcoes() {
     var sel = document.getElementById('req-service-id');
     var display = document.getElementById('estimated-price');
@@ -130,7 +128,6 @@ function carregarOpcoes() {
 }
 
 
-// Solicitar Serviço + WhatsApp (Atualizado)
 if (form_pedido) {
     form_pedido.onsubmit = function (e) {
         e.preventDefault();
@@ -146,14 +143,10 @@ if (form_pedido) {
         var modelo = document.getElementById('req-model').value;
         var obs = document.getElementById('req-notes').value;
 
-        // usuario_logado e perfil must be available
-
-        // verifica cliente
         supabaseClient.from('clientes').select('id').eq('user_id', usuario_logado.id).single().then(function (resCli) {
             var client_id = resCli.data ? resCli.data.id : null;
 
             function doRequest(id_final_cliente) {
-                // cria aparelho
                 supabaseClient.from('aparelhos').insert([{
                     cliente_id: id_final_cliente,
                     marca: marca,
@@ -166,7 +159,6 @@ if (form_pedido) {
                     }
                     var id_ap = resAp.data.id;
 
-                    // cria servico
                     supabaseClient.from('servicos').insert([{
                         aparelho_id: id_ap,
                         tipo: nome_servico,
@@ -207,16 +199,13 @@ if (form_pedido) {
     };
 }
 
-// Init
 document.addEventListener('DOMContentLoaded', initAuth);
 
-// Modals logic if needed (Profile) - could be shared but pasting here for isolation
 const profileModal = document.getElementById('profile-modal');
 const btnCloseProfile = document.getElementById('close-profile-modal');
 const profileForm = document.getElementById('profile-form');
 
 window.openProfileModal = () => {
-    // profile available in perfil_do_usuario
     if (!profileModal) return;
     const nameInput = document.getElementById('edit-name');
     const phoneInput = document.getElementById('edit-phone');
@@ -235,7 +224,6 @@ if (profileForm) {
         const newPhone = document.getElementById('edit-phone').value;
         const newPassword = document.getElementById('edit-password').value;
 
-        // Update profile
         await supabaseClient.from('profiles').update({ nome: newName, telefone: newPhone }).eq('id', usuario_logado.id);
 
         if (newPassword) {

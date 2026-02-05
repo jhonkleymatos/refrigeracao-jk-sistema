@@ -7,7 +7,6 @@ var id_servico_atual = null;
 var usuario_logado = null;
 var perfil_do_usuario = null;
 
-// Auth
 function initAuth() {
     supabaseClient.auth.getSession().then(function (dados) {
         checkSession(dados.data.session);
@@ -29,7 +28,7 @@ function checkSession(sessao) {
                 document.getElementById('user-email').textContent = (p && p.nome) ? p.nome : usuario_logado.email;
             }
             if (!p || p.role !== 'admin') {
-                window.location.href = '../cliente/index.html'; // Protect admin area
+                window.location.href = '../cliente/index.html';
             }
             loadAdminDashboard();
         });
@@ -82,7 +81,6 @@ function loadAdminDashboard() {
     });
 };
 
-// Modal Logic
 window.abrirModal = function (id) {
     id_servico_atual = id;
     modal_admin.classList.remove('hidden');
@@ -105,7 +103,6 @@ if (document.getElementById('close-quick-modal')) {
     };
 }
 
-// Finalizar Serviço (Upload fotos + Valor)
 if (form_concluir) {
     form_concluir.onsubmit = function (e) {
         e.preventDefault();
@@ -129,7 +126,6 @@ if (form_concluir) {
     };
 }
 
-// Função recursiva de upload
 function uploadFotosAdmin(files, sId, callback) {
     if (!files || files.length == 0) {
         if (callback) callback();
@@ -170,19 +166,14 @@ function uploadFotosAdmin(files, sId, callback) {
     up();
 }
 
-// Upload Rapido
 if (form_rapido) {
     form_rapido.addEventListener('submit', function (e) {
         e.preventDefault();
         var files = document.getElementById('quick-photos').files;
-
-        // gambiarra pra achar cliente portfolio
         supabaseClient.from('clientes').select('id').eq('nome', 'Portfólio Geral').single().then(function (resC) {
             var cliId = null;
 
             function step2(cId) {
-                // cria servico dummy
-                // primeiro precisa de um aparelho dummy
                 supabaseClient.from('aparelhos').insert([{
                     marca: 'Portfólio',
                     modelo: 'Avulso',
@@ -226,9 +217,6 @@ if (form_rapido) {
     });
 }
 
-// --- CATALOG MANAGEMENT ---
-
-// catalogo...
 var modal_cat = document.getElementById('catalog-modal');
 var corpo_tab = document.getElementById('catalog-list-body');
 var form_cat = document.getElementById('catalog-form');
@@ -297,7 +285,6 @@ if (form_cat) {
 
 document.addEventListener('DOMContentLoaded', initAuth);
 
-// Modal profile shared logic
 const profileModal = document.getElementById('profile-modal');
 const btnCloseProfile = document.getElementById('close-profile-modal');
 const profileForm = document.getElementById('profile-form');

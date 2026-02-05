@@ -42,7 +42,6 @@ function carregarAparelhos(id) {
     });
 }
 
-// Listeners de Seleção
 if (select_cliente) {
     select_cliente.onchange = function (e) {
         var val = e.target.value;
@@ -123,7 +122,7 @@ if (form_servico) {
     };
 }
 
-// Inicializar
+
 document.addEventListener('DOMContentLoaded', function () {
     if (select_cliente) carregarClientes();
 });

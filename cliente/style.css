@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
-/* Reset & Base */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -20,7 +19,6 @@ body {
     display: none !important;
 }
 
-/* Navbar */
 .navbar {
     background-color: #1d4ed8;
     color: white;
@@ -75,7 +73,6 @@ body {
 
 .btn-profile {
     background-color: #1e40af;
-    /* blue-800 */
     color: white;
     border: none;
     padding: 0.25rem 0.75rem;
@@ -106,7 +103,6 @@ body {
     background-color: #f3f4f6;
 }
 
-/* Main Layout */
 .main-container {
     max-width: 1200px;
     margin: 2rem auto;
@@ -126,7 +122,6 @@ body {
     }
 }
 
-/* Cards */
 .card {
     background-color: white;
     border-radius: 0.5rem;
@@ -163,7 +158,6 @@ body {
     padding-bottom: 0.5rem;
 }
 
-/* Forms */
 .form-grid {
     display: grid;
     gap: 1rem;
@@ -197,7 +191,6 @@ body {
 
 .whatsapp-box {
     background-color: #eff6ff;
-    /* blue-50 */
     border: 1px solid #dbeafe;
     padding: 0.75rem;
     border-radius: 0.5rem;
@@ -234,7 +227,6 @@ body {
     background-color: #1d4ed8;
 }
 
-/* Lists */
 .price-row {
     display: flex;
     justify-content: space-between;
@@ -279,7 +271,6 @@ body {
     color: #ca8a04;
 }
 
-/* yellow-600 */
 .st-concluido {
     color: #16a34a;
 }
@@ -288,7 +279,6 @@ body {
     color: #dc2626;
 }
 
-/* Modal */
 .modal-overlay {
     position: fixed;
     top: 0;

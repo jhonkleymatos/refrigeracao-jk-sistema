@@ -1,6 +1,5 @@
 -- SCRIPT MESTRE DO BANCO DE DADOS - REFRIGERAÇÃO JK
 -- Contém: Estrutura, Políticas de Segurança (RLS), Triggers e Catálogo Inicial.
--- Substitui todos os scripts anteriores.
 
 -- 1. EXTENSÕES
 create extension if not exists "uuid-ossp";

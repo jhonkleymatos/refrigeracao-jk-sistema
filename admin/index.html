@@ -5,14 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Admin - Refrigeração JK</title>
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <!-- Navbar -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-brand">
@@ -29,10 +27,8 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
     <main class="main-container">
 
-        <!-- === SECTION: ADMIN AREA === -->
         <section id="admin-section">
             <div class="admin-header">
                 <h2>
@@ -50,13 +46,10 @@
             </div>
 
             <div id="admin-services-list" class="admin-grid">
-                <!-- JS Injected Cards -->
             </div>
         </section>
 
     </main>
-
-    <!-- Modal for Admin Completion -->
     <div id="admin-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <button id="close-modal" class="btn-close-modal"><i class="fas fa-times"></i></button>
@@ -78,7 +71,6 @@
         </div>
     </div>
 
-    <!-- Modal for Quick Upload (Portfolio) -->
     <div id="quick-upload-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <button id="close-quick-modal" class="btn-close-modal"><i class="fas fa-times"></i></button>
@@ -104,13 +96,10 @@
         </div>
     </div>
 
-    <!-- Modal for Catalog Management -->
     <div id="catalog-modal" class="modal-overlay hidden">
         <div class="modal-content modal-content-lg">
             <button id="close-catalog-modal" class="btn-close-modal"><i class="fas fa-times"></i></button>
             <h3 class="modal-title"><i class="fas fa-tags" style="margin-right: 0.5rem;"></i>Gerenciar Serviços</h3>
-
-            <!-- Form to Add/Edit -->
             <div class="catalog-form-container">
                 <h4 style="font-weight: 700; font-size: 0.875rem; color: #4b5563; margin-bottom: 0.5rem;">Adicionar /
                     Editar Serviço</h4>
@@ -135,7 +124,6 @@
                 </form>
             </div>
 
-            <!-- List -->
             <div class="table-container">
                 <table class="admin-table">
                     <thead>
@@ -145,15 +133,13 @@
                             <th style="text-align: right;">Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="catalog-list-body">
-                        <!-- JS Injected -->
+                    <tbody id="catalog-list-body">   
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- Modal for Profile Edit (Also needed for Admin) -->
     <div id="profile-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <button id="close-profile-modal" class="btn-close-modal"><i class="fas fa-times"></i></button>
@@ -188,7 +174,6 @@
         </div>
     </div>
 
-    <!-- Supabase & Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/config.js"></script>
     <script src="script.js"></script>

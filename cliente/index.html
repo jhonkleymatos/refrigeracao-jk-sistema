@@ -5,14 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minha Área - Refrigeração JK</title>
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <!-- Navbar -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-brand">
@@ -21,7 +19,6 @@
             </div>
             <div class="nav-actions">
                 <span id="user-email" class="user-email-span"></span>
-                <!-- Botão de Perfil -->
                 <button id="btn-profile" onclick="openProfileModal()" class="btn-profile" title="Editar Perfil">
                     <i class="fas fa-user-cog"></i> <span class="hidden-mobile">Meu Perfil</span>
                 </button>
@@ -30,13 +27,10 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
     <main class="main-container">
 
-        <!-- === SECTION: CLIENT AREA === -->
         <section id="client-section" class="dashboard-grid">
 
-            <!-- Request Form (Col Span 2) -->
             <div class="card col-span-2">
                 <h2 class="card-header"><i class="fas fa-plus-circle"></i> Solicitar Novo Serviço</h2>
                 <form id="request-form" class="form-grid">
@@ -55,7 +49,6 @@
                             <label class="input-label">Marca</label>
                             <input id="req-brand" type="text" class="form-input" placeholder="Ex: Samsung">
                         </div>
-                        <!-- Empty placeholder for layout balance if needed, or remove grid above -->
                     </div>
 
                     <div>
@@ -81,7 +74,6 @@
                 </form>
             </div>
 
-            <!-- Price List (Catalog) -->
             <div class="card">
                 <h2 class="card-title-border"><i class="fas fa-list-alt"
                         style="color: #3b82f6; margin-right: 0.5rem;"></i>Tabela de Preços</h2>
@@ -90,18 +82,15 @@
                 </div>
             </div>
 
-            <!-- Client History -->
             <div class="card">
                 <h2 class="card-title-border">Meus Pedidos</h2>
                 <div id="client-history-list">
-                    <!-- JS Injected -->
                 </div>
             </div>
         </section>
 
     </main>
 
-    <!-- Modal for Profile Edit -->
     <div id="profile-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <button id="close-profile-modal" class="btn-close-modal"><i class="fas fa-times"></i></button>
@@ -136,7 +125,6 @@
         </div>
     </div>
 
-    <!-- Supabase & Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/config.js"></script>
     <script src="script.js"></script>

@@ -7,7 +7,6 @@ var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSI
 var supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 console.log("Supabase ok");
 
-// Pegar perfil
 function getCurrentProfile() {
     // fazendo promessa manual pq eh mais facil
     return supabaseClient.auth.getUser().then(function (dados) {

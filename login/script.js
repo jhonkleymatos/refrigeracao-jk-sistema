@@ -28,7 +28,6 @@ function tratarSessao(sessao) {
     }
 }
 
-// Login logic from auth.js
 function login(email, password) {
     supabaseClient.auth.signInWithPassword({
         email: email,
