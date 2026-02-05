@@ -1,6 +1,15 @@
-node_modules
-.DS_Store
+# OS files
+Desktop.ini
 Thumbs.db
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+
+# Node (if used later)
+node_modules/
+.env
+
+# Logs
 *.log
-.vscode
-.idea

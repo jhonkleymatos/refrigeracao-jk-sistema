@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin - Refrigeração JK</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-user-shield"></i>
+                <h1>Painel Técnico</h1>
+            </div>
+            <div class="nav-actions">
+                <span id="user-email" class="user-email-span"></span>
+                <button id="btn-profile" onclick="openProfileModal()" class="btn-profile-admin" title="Editar Perfil">
+                    <i class="fas fa-user-cog"></i> <span class="hidden-mobile">Perfil</span>
+                </button>
+                <button id="btn-logout" onclick="logout()" class="btn-logout-admin">Sair</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+
+        <!-- === SECTION: ADMIN AREA === -->
+        <section id="admin-section">
+            <div class="admin-header">
+                <h2>
+                    <span><i class="fas fa-clipboard-list"
+                            style="color: #2563eb; margin-right: 0.5rem;"></i>Gerenciamento de Serviços</span>
+                </h2>
+                <div>
+                    <button id="btn-quick-upload" class="btn-action">
+                        <i class="fas fa-plus"></i> Foto Avulsa
+                    </button>
+                    <button id="btn-manage-catalog" class="btn-action btn-secondary" style="margin-left: 0.5rem;">
+                        <i class="fas fa-tags"></i> Serviços
+                    </button>
+                </div>
+            </div>
+
+            <div id="admin-services-list" class="admin-grid">
+                <!-- JS Injected Cards -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal for Admin Completion -->
+    <div id="admin-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button id="close-modal" class="btn-close-modal"><i class="fas fa-times"></i></button>
+            <h3 class="modal-title">Finalizar Serviço</h3>
+
+            <form id="complete-service-form" class="form-grid">
+                <div>
+                    <label class="form-label">Valor Cobrado (R$)</label>
+                    <input id="final-price" type="number" step="0.01" class="form-input" required>
+                </div>
+                <div>
+                    <label class="form-label">Fotos do Resultado</label>
+                    <input id="final-photos" type="file" multiple class="form-input" accept="image/*">
+                </div>
+                <button type="submit" class="btn-submit-green">
+                    <i class="fas fa-check"></i> Concluir e Salvar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Quick Upload (Portfolio) -->
+    <div id="quick-upload-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button id="close-quick-modal" class="btn-close-modal"><i class="fas fa-times"></i></button>
+            <h3 class="modal-title">Adicionar ao Portfólio</h3>
+            <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 1rem;">Adicione fotos antigas ou avulsas
+                diretamente à galeria.</p>
+
+            <form id="quick-upload-form" class="form-grid">
+                <div class="upload-area">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <label for="quick-photos" class="upload-label">
+                        Escolha as fotos
+                    </label>
+                    <input id="quick-photos" type="file" multiple class="hidden" accept="image/*" required
+                        onchange="document.getElementById('file-chosen').textContent = this.files.length + ' arquivos selecionados'">
+                    <span id="file-chosen" style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem;">Nenhum
+                        arquivo</span>
+                </div>
+                <button type="submit" class="btn-submit-blue">
+                    <i class="fas fa-upload"></i> Enviar para Galeria
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Catalog Management -->
+    <div id="catalog-modal" class="modal-overlay hidden">
+        <div class="modal-content modal-content-lg">
+            <button id="close-catalog-modal" class="btn-close-modal"><i class="fas fa-times"></i></button>
+            <h3 class="modal-title"><i class="fas fa-tags" style="margin-right: 0.5rem;"></i>Gerenciar Serviços</h3>
+
+            <!-- Form to Add/Edit -->
+            <div class="catalog-form-container">
+                <h4 style="font-weight: 700; font-size: 0.875rem; color: #4b5563; margin-bottom: 0.5rem;">Adicionar /
+                    Editar Serviço</h4>
+                <form id="catalog-form" class="catalog-form">
+                    <input type="hidden" id="cat-id">
+                    <div class="col-span-2">
+                        <input id="cat-name" type="text" placeholder="Nome do Serviço (Ex: Limpeza Split)"
+                            class="form-input" required>
+                    </div>
+                    <div>
+                        <input id="cat-price" type="number" step="0.01" placeholder="Preço (R$)" class="form-input"
+                            required>
+                    </div>
+                    <div class="col-span-3">
+                        <input id="cat-desc" type="text" placeholder="Descrição curta (Opcional)" class="form-input">
+                    </div>
+                    <div class="col-span-3" style="display: flex; gap: 0.5rem;">
+                        <button type="submit" class="btn-submit-green" style="flex: 1;">Salvar</button>
+                        <button type="button" id="btn-clear-catalog" class="btn-secondary"
+                            style="background-color: #d1d5db; color: #374151; border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; cursor: pointer;">Limpar</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- List -->
+            <div class="table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Preço</th>
+                            <th style="text-align: right;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="catalog-list-body">
+                        <!-- JS Injected -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Profile Edit (Also needed for Admin) -->
+    <div id="profile-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button id="close-profile-modal" class="btn-close-modal"><i class="fas fa-times"></i></button>
+            <h3 class="modal-title"><i class="fas fa-user-edit" style="margin-right: 0.5rem;"></i>Editar Perfil</h3>
+
+            <form id="profile-form" class="form-grid">
+                <div>
+                    <label class="form-label">Nome Completo</label>
+                    <input id="edit-name" type="text" class="form-input">
+                </div>
+                <div>
+                    <label class="form-label">Telefone / WhatsApp</label>
+                    <input id="edit-phone" type="text" class="form-input">
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 0.5rem 0;">
+
+                <div>
+                    <label class="form-label">Nova Senha (Opcional)</label>
+                    <input id="edit-password" type="password" class="form-input"
+                        placeholder="Deixe vazio para manter a atual">
+                    <p style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.25rem;">Preencha apenas se quiser trocar
+                        sua senha.</p>
+                </div>
+
+                <div style="padding-top: 0.5rem;">
+                    <button type="submit" class="btn-submit-blue">
+                        Salvar Alterações
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Supabase & Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/config.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

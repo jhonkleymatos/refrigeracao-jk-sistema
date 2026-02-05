@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Área - Refrigeração JK</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-snowflake"></i>
+                <h1>Refrigeração JK</h1>
+            </div>
+            <div class="nav-actions">
+                <span id="user-email" class="user-email-span"></span>
+                <!-- Botão de Perfil -->
+                <button id="btn-profile" onclick="openProfileModal()" class="btn-profile" title="Editar Perfil">
+                    <i class="fas fa-user-cog"></i> <span class="hidden-mobile">Meu Perfil</span>
+                </button>
+                <button id="btn-logout" onclick="logout()" class="btn-logout">Sair</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+
+        <!-- === SECTION: CLIENT AREA === -->
+        <section id="client-section" class="dashboard-grid">
+
+            <!-- Request Form (Col Span 2) -->
+            <div class="card col-span-2">
+                <h2 class="card-header"><i class="fas fa-plus-circle"></i> Solicitar Novo Serviço</h2>
+                <form id="request-form" class="form-grid">
+                    <div>
+                        <label class="input-label">Serviço Desejado</label>
+                        <select id="req-service-id" class="form-select" required>
+                            <option value="">Carregando serviços...</option>
+                        </select>
+                        <p id="estimated-price" class="price-estimate hidden">
+                            Valor Estimado: R$ <span id="price-value">0,00</span>
+                        </p>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div>
+                            <label class="input-label">Marca</label>
+                            <input id="req-brand" type="text" class="form-input" placeholder="Ex: Samsung">
+                        </div>
+                        <!-- Empty placeholder for layout balance if needed, or remove grid above -->
+                    </div>
+
+                    <div>
+                        <label class="input-label">Modelo/BTUs</label>
+                        <input id="req-model" type="text" class="form-input" placeholder="Ex: Inverter 12000 BTUs">
+                    </div>
+
+                    <div>
+                        <label class="input-label">Observações</label>
+                        <textarea id="req-notes" rows="3" class="form-textarea"
+                            placeholder="Ex: Ar não está gelando..."></textarea>
+                    </div>
+
+                    <div class="whatsapp-box">
+                        <i class="fab fa-whatsapp"></i>
+                        <p>Ao clicar em "Solicitar", você será redirecionado para o WhatsApp para confirmar os detalhes
+                            com nosso técnico.</p>
+                    </div>
+
+                    <button type="submit" class="btn-submit-request">
+                        Solicitar via WhatsApp
+                    </button>
+                </form>
+            </div>
+
+            <!-- Price List (Catalog) -->
+            <div class="card">
+                <h2 class="card-title-border"><i class="fas fa-list-alt"
+                        style="color: #3b82f6; margin-right: 0.5rem;"></i>Tabela de Preços</h2>
+                <div id="client-price-list">
+                    <p style="color: #6b7280; font-size: 0.875rem;">Carregando tabela...</p>
+                </div>
+            </div>
+
+            <!-- Client History -->
+            <div class="card">
+                <h2 class="card-title-border">Meus Pedidos</h2>
+                <div id="client-history-list">
+                    <!-- JS Injected -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal for Profile Edit -->
+    <div id="profile-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button id="close-profile-modal" class="btn-close-modal"><i class="fas fa-times"></i></button>
+            <h3 class="modal-title"><i class="fas fa-user-edit" style="margin-right: 0.5rem;"></i>Editar Perfil</h3>
+
+            <form id="profile-form" class="form-grid">
+                <div>
+                    <label class="input-label">Nome Completo</label>
+                    <input id="edit-name" type="text" class="form-input">
+                </div>
+                <div>
+                    <label class="input-label">Telefone / WhatsApp</label>
+                    <input id="edit-phone" type="text" class="form-input">
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 0.5rem 0;">
+
+                <div>
+                    <label class="input-label">Nova Senha (Opcional)</label>
+                    <input id="edit-password" type="password" class="form-input"
+                        placeholder="Deixe vazio para manter a atual">
+                    <p style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.25rem;">Preencha apenas se quiser trocar
+                        sua senha.</p>
+                </div>
+
+                <div style="padding-top: 0.5rem;">
+                    <button type="submit" class="btn-submit-request">
+                        Salvar Alterações
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Supabase & Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/config.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

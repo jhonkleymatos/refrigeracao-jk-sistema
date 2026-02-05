@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Refrigeração JK</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="login-header">
+        <a href="../home/index.html" class="login-home-link">
+            <i class="fas fa-snowflake"></i>
+            <h1>Refrigeração JK</h1>
+        </a>
+    </div>
+
+    <!-- === SECTION: AUTH (Login/Signup) === -->
+    <section id="auth-section" class="auth-section">
+        <!-- Login Form -->
+        <div id="login-form-container" class="auth-card card-login">
+            <div class="form-header">
+                <h2>Área do Cliente</h2>
+                <p>Acesse para solicitar serviços</p>
+            </div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="label">Email</label>
+                    <input id="email" type="email" class="input-field" placeholder="seu@email.com">
+                </div>
+                <div class="form-group">
+                    <label class="label">Senha</label>
+                    <input id="password" type="password" class="input-field" placeholder="********">
+                </div>
+
+                <div class="form-footer">
+                    <label style="display: flex; align-items: center; cursor: pointer; color: #4b5563;">
+                        <input type="checkbox" id="remember-me" checked style="margin-right: 0.5rem;">
+                        Manter conectado
+                    </label>
+                    <a href="#" class="link-blue">Esqueceu a senha?</a>
+                </div>
+
+                <button id="btn-login" class="btn-primary-form">
+                    Entrar
+                </button>
+            </form>
+            <div class="switch-auth">
+                <p>Ainda não tem conta? <a href="#" id="show-signup" class="link-blue">Cadastre-se</a></p>
+            </div>
+        </div>
+
+        <!-- Signup Form -->
+        <div id="signup-form-container" class="auth-card card-signup hidden">
+            <div class="form-header">
+                <h2>Criar Conta</h2>
+            </div>
+            <form id="signup-form">
+                <div class="form-group"><input id="signup-name" type="text" class="input-field"
+                        placeholder="Nome Completo" required></div>
+                <div class="form-group"><input id="signup-phone" type="tel" class="input-field"
+                        placeholder="WhatsApp (DDD + Número)" required></div>
+                <div class="form-group"><input id="signup-address" type="text" class="input-field"
+                        placeholder="Endereço Completo" required></div>
+                <div class="form-group"><input id="signup-email" type="email" class="input-field" placeholder="Email"
+                        required></div>
+                <div class="form-group"><input id="signup-password" type="password" class="input-field"
+                        placeholder="Senha" required></div>
+
+                <button id="btn-signup" class="btn-success-form">
+                    Cadastrar
+                </button>
+                <div class="switch-auth">
+                    <a href="#" id="show-login" class="link-blue">Voltar para Login</a>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Supabase & Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/config.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
